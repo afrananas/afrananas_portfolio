@@ -129,7 +129,7 @@ jobs:
           set -o pipefail
           if ! npx wrangler versions upload --preview-alias "pr-$PR_NUMBER" --message "PR #$PR_NUMBER $HEAD_SHA" 2>&1 | tee upload.log; then
             # Bootstrap only: preview versions need an existing Worker, created by the first production deploy.
-            if grep -qiE "does not exist|not found|10007" upload.log; then
+            if grep -qiE "does not (yet )?exist|not found|10007" upload.log; then
               echo "::notice::Worker not deployed yet; preview starts after the first production deploy."
               exit 0
             fi
