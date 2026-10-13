@@ -37,7 +37,7 @@ These are defined in `public/_headers` and served on every response (NFR-SEC-02)
 
 ```
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
@@ -62,6 +62,7 @@ HSTS `preload` is **not** set at launch. Consider adding it after 3 months with 
 | `connect-src 'self' https://cloudflareinsights.com` | The analytics beacon's reporting endpoint |
 | `form-action 'none'` | There are no forms (FR-CON-04). A form ADR must update this. |
 | `frame-ancestors 'none'` | No framing. This only works as a header, not a `<meta>` tag. |
+| *(no `upgrade-insecure-requests`)* | Left out on purpose, 2026-10-14. Every sub-resource is same-origin or an explicit `https://` URL, and production is HTTPS-only through HSTS, so the directive adds nothing. It did break testing: WebKit applied it to the plain-HTTP local test server (`wrangler dev` on `http://127.0.0.1`), rewrote font requests to `https://` so they hung, and failed every WebKit E2E test in CI. |
 
 Astro's built-in `security.csp` option, which emits per-page hashes in a `<meta>` tag, is **not** used. Hash-based `style-src` would disable `'unsafe-inline'` in modern browsers and break Shiki's style attributes, and a header CSP is needed anyway for `frame-ancestors`. One header policy is simpler to reason about.
 
