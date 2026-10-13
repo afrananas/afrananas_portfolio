@@ -91,10 +91,10 @@ There are exactly three scripts. Each one is a module scoped to its component an
 | `@astrojs/mdx` | Production (build) | MDX content |
 | `@astrojs/sitemap` | Production (build) | `sitemap-index.xml` |
 | `typescript`, `@astrojs/check` | Dev | Type checking |
-| `eslint`, `eslint-plugin-astro`, `eslint-plugin-jsx-a11y`, `prettier`, `prettier-plugin-astro` | Dev | Linting and formatting |
+| `eslint`, `typescript-eslint`, `eslint-plugin-astro`, `eslint-plugin-jsx-a11y-x`, `prettier`, `prettier-plugin-astro` | Dev | Linting and formatting |
 | `vitest` | Dev | Unit and content tests |
 | `@playwright/test`, `@axe-core/playwright` | Dev | E2E and accessibility tests |
-| `@lhci/cli` | Dev | Performance budgets |
+| `@lhci/cli` | Not installed (run with pinned `npx` in CI) | Performance budgets ([technology stack](technology-stack.md#quality-tooling)) |
 | `wrangler` | Dev | Local production-like serving and deployment |
 
 Nothing is shipped to the browser except the code we write. No runtime library reaches the browser. Versions are recorded in the [technology stack](technology-stack.md).

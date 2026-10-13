@@ -1,0 +1,131 @@
+---
+// Document shell: <head> metadata, skip link, header, main, footer, analytics.
+// Spec: docs/02-design/page-specifications.md#global-shell-every-page
+// Walking-skeleton scope: full nav, résumé link and contact footer arrive in M4.
+import { Font } from 'astro:assets';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import { profile } from '../data/profile';
+import { buildTitle } from '../lib/seo';
+import { analyticsToken, isProduction } from '../lib/site';
+
+interface Props {
+  /** Page title without the name suffix; omit on the home page. */
+  title?: string;
+  /** 70–160 characters (FR-META-01). */
+  description: string;
+  noindex?: boolean;
+}
+
+const { title, description, noindex = false } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{buildTitle(title)}</title>
+    <meta name="description" content={description} />
+    {(noindex || !isProduction) && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#0f1115" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <Font cssVariable="--font-plex-sans" preload={[{ weight: 400, style: 'normal' }]} />
+    <Font cssVariable="--font-plex-mono" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <header class="site-header">
+      <div class="container">
+        <a class="site-name" href="/">
+          {profile.name}
+        </a>
+      </div>
+    </header>
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <ul>
+          <li>
+            <a href={profile.links.github}>
+              GitHub<span class="visually-hidden"> (external)</span>
+            </a>
+          </li>
+          <li>
+            <a href={profile.links.source}>
+              Source<span class="visually-hidden"> (external)</span>
+            </a>
+          </li>
+        </ul>
+        <p>
+          © {year} {profile.name}
+        </p>
+      </div>
+    </footer>
+    {analyticsToken && (
+      <script
+        is:inline
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={JSON.stringify({ token: analyticsToken })}
+      />
+    )}
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    inset-inline-start: var(--space-4);
+    inset-block-start: var(--space-2);
+    z-index: 20;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    border-radius: var(--radius-sm);
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus-visible {
+    transform: none;
+  }
+
+  .site-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 10;
+    min-block-size: var(--header-height);
+    display: flex;
+    align-items: center;
+    background: var(--color-bg);
+    border-block-end: var(--border-width) solid var(--color-border);
+  }
+
+  .site-name {
+    color: var(--color-text);
+    font-weight: var(--weight-semibold);
+    text-decoration: none;
+  }
+
+  .site-footer {
+    margin-block-start: var(--space-8);
+    padding-block: var(--space-6);
+    border-block-start: var(--border-width) solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .site-footer ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+    padding: 0;
+    list-style: none;
+    margin-block-end: var(--space-3);
+  }
+</style>

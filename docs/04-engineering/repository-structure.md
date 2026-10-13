@@ -2,15 +2,15 @@
 
 > Status: Accepted · Owner: Afran Anas · Last updated: 2026-10-13
 
-This is the target layout once the Phase 3 walking skeleton exists. Anything marked *(skeleton)* is created at that point. Don't create empty folders ahead of time.
+This is the layout as of the Phase 3 walking skeleton. Folders listed for later milestones (`components/`, `content/`, `layouts/CaseStudyLayout`) are created when their first file is. Don't create empty folders ahead of time.
 
 ```
 .
 ├── .github/
 │   ├── workflows/
-│   │   ├── ci.yml                  Gates, preview deploy (PR), production deploy + smoke (main)   (skeleton)
-│   │   └── links.yml               Weekly external link check                                      (skeleton)
-│   ├── dependabot.yml              Monthly grouped npm + actions updates                           (skeleton)
+│   │   ├── ci.yml                  Gates, preview deploy (PR), production deploy + smoke (main)
+│   │   └── links.yml               Weekly external link check
+│   ├── dependabot.yml              Monthly grouped npm + actions updates
 │   └── pull_request_template.md    PR checklist (exists)
 ├── docs/                           All product/engineering documentation (this folder)
 ├── public/                         Copied verbatim to dist/
@@ -43,9 +43,10 @@ This is the target layout once the Phase 3 walking skeleton exists. Anything mar
 │   ├── e2e/                        Playwright: flows, routes, a11y, no-JS
 │   └── build/                      Vitest over dist/: inline scripts, sitemap set, drafts absent
 ├── .editorconfig  .gitignore  .nvmrc  .env.example     (exist)
-├── astro.config.mjs  tsconfig.json  eslint.config.js  .prettierrc  (skeleton)
-├── playwright.config.ts  vitest.config.ts  lighthouserc.json  wrangler.jsonc      (skeleton)
-├── package.json  package-lock.json                                     (skeleton)
+├── astro.config.mjs  tsconfig.json  eslint.config.js  .prettierrc
+├── playwright.config.ts  lighthouserc.json  wrangler.jsonc  .prettierignore
+│                                   (no vitest.config.ts: defaults suffice; test dirs are passed by script)
+├── package.json  package-lock.json
 ├── CLAUDE.md                       Guidance for AI coding agents (exists)
 ├── SECURITY.md                     Vulnerability reporting (exists)
 ├── LICENSE                         Pending owner decision (Q8)

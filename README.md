@@ -6,13 +6,13 @@ The site is built as a production software product. Requirements, design, archit
 
 ## Status
 
-**All pre-implementation documentation is complete. No code has been written yet.**
+**Documentation complete. Walking skeleton (M3) built; first deploy pending.**
 
 | Phase | State |
 |---|---|
 | 1: Product definition | Documentation complete. Waiting on owner inputs (Q1–Q3, Q5). |
 | 2: Content and design | Specifications complete. Content (pilot case study) not started. |
-| 3: Architecture and setup | Decisions (ADR-001 to ADR-007) and standards complete. **Walking skeleton is next.** |
+| 3: Architecture and setup | Decisions and standards complete. **Walking skeleton built and passing local gates; deploy and WS checks next.** |
 | 4–7: Build, release, maintain | Not started. Plans, gates, and runbooks are ready. |
 
 Details: [implementation roadmap](docs/05-delivery/implementation-roadmap.md) · [milestone plan](docs/05-delivery/milestone-plan.md).
@@ -25,12 +25,14 @@ The reasoning is in the [technology stack](docs/03-architecture/technology-stack
 
 ## Getting started
 
-The scaffold arrives with milestone M3. Once it exists:
-
 ```sh
-nvm use && npm ci && npm run dev
-npm run verify    # every local quality gate
+nvm use && npm ci
+npx playwright install chromium webkit
+npm run dev       # http://localhost:4321
+npm run verify    # every local quality gate (mirrors CI)
 ```
+
+On macOS 12, use the [fallback](docs/06-operations/local-development.md#older-macos-fallback) for E2E tests.
 
 See [local development](docs/06-operations/local-development.md).
 
@@ -53,7 +55,11 @@ Start with the [project overview](docs/00-foundation/project-overview.md).
 
 ```
 docs/                    Specifications and decisions (00-foundation … 07-project-case-studies)
-.github/                 Pull request template (workflows arrive with M3)
+src/                     Astro pages, layout, styles, lib (pure helpers), data/profile.ts
+public/                  _headers, _redirects, favicon
+tests/                   unit/, build/ (checks dist/), e2e/ (Playwright + axe)
+scripts/                 check-css-tokens.mjs, smoke.mjs
+.github/                 CI, link-check and Dependabot workflows, PR template
 CLAUDE.md                Rules for AI coding agents
 SECURITY.md              Vulnerability reporting
 .editorconfig .gitignore .nvmrc .env.example

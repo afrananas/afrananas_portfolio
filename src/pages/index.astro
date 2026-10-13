@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { positioning, profile } from '../data/profile';
+---
+
+<BaseLayout description="Software engineer working on backend systems, AI/ML, computer vision, video analytics and GenAI/RAG.">
+  <section class="hero container" aria-labelledby="hero-name">
+    <h1 id="hero-name">{profile.name}</h1>
+    <p class="positioning">{positioning}</p>
+    <h2 class="visually-hidden">Focus areas</h2>
+    <ul class="focus">
+      {profile.focusAreas.map((area) => (
+        <li>{area}</li>
+      ))}
+    </ul>
+    <p>
+      <a href={profile.links.github}>
+        View my work on GitHub<span class="visually-hidden"> (external)</span>
+      </a>
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-block: var(--space-8);
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  h1 {
+    font-size: var(--text-display);
+    line-height: var(--leading-tight);
+  }
+
+  .positioning {
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+  }
+
+  .focus {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    padding: 0;
+    list-style: none;
+    color: var(--color-text);
+  }
+</style>
