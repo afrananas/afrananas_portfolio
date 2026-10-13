@@ -10,7 +10,7 @@ Versions are the current stable releases as of 2026-10-13. **The lockfile is the
 |---|---|---|---|---|
 | Rendering | Static site generation | — | No per-request data, fastest, nothing running at runtime | [ADR-001](adr/ADR-001-rendering-strategy.md) |
 | Framework | Astro | 7.x | Zero JavaScript by default, content collections, built-in images, fonts, and Shiki | [ADR-002](adr/ADR-002-framework.md) |
-| Language | TypeScript, strict | Whichever version Astro's tooling supports (pinned) | Type safety for content and logic (NFR-MAINT-01) | ADR-002 |
+| Language | TypeScript, strict (`astro/tsconfigs/strictest`) | 6.0.x (`~6.0.3`) | Type safety for content and logic (NFR-MAINT-01). Pinned below 6.1 because `@astrojs/check` supports TypeScript up to 6.x and `typescript-eslint` supports below 6.1.0. Move to 7.x when both support it. | ADR-002 |
 | Content | MDX and YAML in Git, using content collections and Zod (`astro/zod`) | `@astrojs/mdx` 8.x | Validated, reviewable, free | [ADR-003](adr/ADR-003-content-source.md) |
 | Styling | Native CSS: custom properties and scoped `<style>` | — | No dependency, tokens as the single source | [ADR-004](adr/ADR-004-styling.md) |
 | Fonts | IBM Plex Sans and Plex Mono, self-hosted with the Astro Fonts API (Fontsource provider) | — | Privacy, performance, fallback metrics prevent layout shift | [Visual design system](../02-design/visual-design-system.md#typography) |
@@ -26,12 +26,12 @@ Versions are the current stable releases as of 2026-10-13. **The lockfile is the
 | Concern | Choice | Version evaluated | Notes |
 |---|---|---|---|
 | Type checking | `astro check` (`@astrojs/check`) | 0.9.x | Covers `.astro`, `.ts`, and content types |
-| Linting | ESLint flat config, `eslint-plugin-astro` (recommended and jsx-a11y configs) | ESLint 10.x | Uses the recommended configs only. No style rules, because Prettier owns formatting. |
+| Linting | ESLint flat config, `eslint-plugin-astro` (recommended and jsx-a11y configs), with `eslint-plugin-jsx-a11y-x` | ESLint 10.x | Uses the recommended configs only. No style rules, because Prettier owns formatting. `eslint-plugin-jsx-a11y` doesn't support ESLint 10 yet. `eslint-plugin-astro` supports its fork, `-x`, as a drop-in. |
 | Formatting | Prettier and `prettier-plugin-astro` | 3.x | Default options, plus `printWidth: 100` |
 | Unit and content tests | Vitest | 5.x | `src/lib` logic and content-rule tests |
 | E2E tests | Playwright (Chromium and WebKit) | 1.x | Run against the production build served by `wrangler dev` |
 | Accessibility tests | `@axe-core/playwright` | 4.x | WCAG 2.2 AA tags |
-| Performance budgets | Lighthouse CI (`@lhci/cli`) | 0.15.x | Runs against the production build served by `wrangler dev`, because extensionless URLs need the host's HTML handling |
+| Performance budgets | Lighthouse CI, run as `npx @lhci/cli@0.15.1` (**not** a project dependency) | 0.15.1 | Runs against the production build served by `wrangler dev`, because extensionless URLs need the host's HTML handling. It's kept out of `devDependencies` because its dependency tree carries 17 unfixed advisories (11 high), and keeping them out keeps the `npm audit` gate meaningful. None of them is reachable here: the vulnerable code handles FTP, proxies and PAC files, and the tool only talks to a local server. |
 | Link checking | lychee (GitHub Action) | — | Internal links offline on every PR; external links weekly |
 | CSS token check | `scripts/check-css-tokens.mjs` (repository script) | — | Fails on raw values outside `tokens.css` ([ADR-004](adr/ADR-004-styling.md)) |
 | Dependency updates | Dependabot (npm and github-actions) | — | Monthly, grouped |

@@ -28,7 +28,7 @@ Do these steps in order during M3. Tick them off in the M3 pull request.
 **Cloudflare**
 7. Create the account and turn on MFA.
 8. **Domain (Q4, A1):** register the domain with Cloudflare Registrar. If it's registered elsewhere, add it to Cloudflare and change its nameservers to Cloudflare's. Turn on auto-renew and the registrar lock.
-9. Create the API token with the **Edit Cloudflare Workers** template, limited to this account, with no zone access unless the custom-domain step needs it. Store it as the `CLOUDFLARE_API_TOKEN` GitHub secret, and store the account ID as the `CLOUDFLARE_ACCOUNT_ID` variable.
+9. Create the API token with the **Edit Cloudflare Workers** template, limited to this account, with no zone access unless the custom-domain step needs it. Store it as the `CLOUDFLARE_API_TOKEN` GitHub secret, and store the account ID as the `CLOUDFLARE_ACCOUNT_ID` secret. ✅ Done 2026-10-13.
 10. Do the first deploy through CI, by merging the M3 pull request. Confirm the Worker exists and serves on `workers.dev`.
 11. Attach the custom domain to the Worker, either with a `routes` entry with `custom_domain: true` in `wrangler.jsonc` or through the dashboard. Prefer the config file, so the setup is recorded in Git.
 12. Turn on Web Analytics: add the site and copy the token into the `CF_WEB_ANALYTICS_TOKEN` GitHub variable. Choose the manual JavaScript snippet, not automatic injection, so the beacon is controlled by `SITE_ENV`.

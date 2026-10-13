@@ -20,7 +20,7 @@ This is a static site with no server, accounts, forms, or stored user data ([ADR
 | # | Threat | Likelihood | Impact | Controls |
 |---|---|---|---|---|
 | T1 | Takeover of the GitHub, Cloudflare, registrar, or email account | Medium | High | Multi-factor authentication (passkeys or hardware keys) on all four (NFR-SEC-05). Recovery codes stored offline. Email is the root account, so it is protected first. |
-| T2 | Malicious or compromised npm package running at build time | Medium | High | A minimal dependency set (NFR-MAINT-05). Committed lockfile and `npm ci`. Dependabot with grouped, reviewed updates. `npm audit` in CI. No `postinstall` scripts from new dependencies without review. |
+| T2 | Malicious or compromised npm package running at build time | Medium | High | A minimal dependency set (NFR-MAINT-05). Committed lockfile and `npm ci`. Dependabot with grouped, reviewed updates. `npm audit` in CI. Install scripts run only for packages approved in `package.json` → `allowScripts` (npm 11). Currently that's `workerd` (Cloudflare's runtime) and `esbuild` (Vite's bundler). Both scripts only verify the platform binary, or download it if it's missing. `fsevents` is denied, because it works from its prebuilt binary. A new install script needs review and approval in a pull request. |
 | T3 | Compromised third-party GitHub Action | Low–Medium | High | Actions pinned to a full commit SHA. Minimal `permissions:`. Deploy secrets only in deploy jobs on `main` and same-repository pull requests (NFR-SEC-06). |
 | T4 | Cloudflare API token leaked | Low | High | Token scoped to editing Workers on one account. Stored only as a GitHub secret. Never echoed in logs. Rotated every year and immediately if exposure is suspected. |
 | T5 | A secret committed to the public repository | Medium | Medium–High | There are almost no secrets. GitHub secret scanning and push protection are on. `.env*` is git-ignored, except `.env.example`. |
@@ -37,7 +37,7 @@ These are defined in `public/_headers` and served on every response (NFR-SEC-02)
 
 ```
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
@@ -62,6 +62,7 @@ HSTS `preload` is **not** set at launch. Consider adding it after 3 months with 
 | `connect-src 'self' https://cloudflareinsights.com` | The analytics beacon's reporting endpoint |
 | `form-action 'none'` | There are no forms (FR-CON-04). A form ADR must update this. |
 | `frame-ancestors 'none'` | No framing. This only works as a header, not a `<meta>` tag. |
+| *(no `upgrade-insecure-requests`)* | Left out on purpose, 2026-10-14. Every sub-resource is same-origin or an explicit `https://` URL, and production is HTTPS-only through HSTS, so the directive adds nothing. It did break testing: WebKit applied it to the plain-HTTP local test server (`wrangler dev` on `http://127.0.0.1`), rewrote font requests to `https://` so they hung, and failed every WebKit E2E test in CI. |
 
 Astro's built-in `security.csp` option, which emits per-page hashes in a `<meta>` tag, is **not** used. Hash-based `style-src` would disable `'unsafe-inline'` in modern browsers and break Shiki's style attributes, and a header CSP is needed anyway for `frame-ancestors`. One header policy is simpler to reason about.
 
@@ -72,7 +73,7 @@ E2E tests fail on any `securitypolicyviolation` event or CSP console error, so a
 | Secret | Where | Scope | Rotation |
 |---|---|---|---|
 | `CLOUDFLARE_API_TOKEN` | GitHub Actions secret | Workers edit on one account | Every year, or immediately on suspicion |
-| `CLOUDFLARE_ACCOUNT_ID` | GitHub Actions variable (an identifier, not a secret) | — | — |
+| `CLOUDFLARE_ACCOUNT_ID` | GitHub Actions secret. It's an identifier, not sensitive, but stored as a secret for simplicity. | — | — |
 | `CF_WEB_ANALYTICS_TOKEN` | GitHub Actions variable. **Public by design**, because it appears in page HTML. | Only allows sending beacons | Not needed |
 
 Rules:

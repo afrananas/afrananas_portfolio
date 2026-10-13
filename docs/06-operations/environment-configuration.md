@@ -18,7 +18,7 @@ The production origin (`site`) is a constant in `astro.config.mjs`, not a variab
 | Name | Kind | Where | Used by |
 |---|---|---|---|
 | `CLOUDFLARE_API_TOKEN` | **Secret** | GitHub → Settings → Secrets → Actions (repository secret). Production deploys use the `production` environment. | `wrangler` in the `preview` and `deploy` jobs |
-| `CLOUDFLARE_ACCOUNT_ID` | Identifier | GitHub → Actions **variables** | Same |
+| `CLOUDFLARE_ACCOUNT_ID` | Identifier (stored as a secret) | GitHub → Actions **secrets** | Same |
 | `CF_WEB_ANALYTICS_TOKEN` | Public value | GitHub → Actions **variables** | The `build` job |
 
 The token is created with Cloudflare's "Edit Cloudflare Workers" template, restricted to this account. The steps are in the [runbook](deployment-runbook.md#one-time-setup). It is rotated every year ([maintenance](maintenance.md)).

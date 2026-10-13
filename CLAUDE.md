@@ -14,7 +14,7 @@ This is the portfolio site of Afran Anas (Software Engineer — Backend · AI ·
 
 ## Commands
 
-The scaffold doesn't exist until milestone M3. These are the planned scripts (`docs/06-operations/local-development.md`):
+Full list in `docs/06-operations/local-development.md`:
 
 ```
 npm ci              install (never `npm install` in CI)
@@ -22,6 +22,7 @@ npm run dev         dev server
 npm run verify      format:check → lint → check → check:css → test → build → test:build → test:e2e
 npm test            unit + content tests
 npm run test:e2e    Playwright + axe against the built site served by wrangler dev
+npm run test:e2e:fallback   macOS 12: astro preview + installed Chrome (CI stays authoritative)
 ```
 
 ## Rules

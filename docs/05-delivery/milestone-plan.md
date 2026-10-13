@@ -8,7 +8,7 @@ Each milestone closes one [roadmap](implementation-roadmap.md) phase. Effort is 
 |---|---|---|---|---|
 | M1: Product defined | 1 | 1 (owner inputs) | TODO(owner) | Documentation done. Waiting on Q1–Q3, Q5. |
 | M2: Content and design ready | 2 | 4–8 (mostly writing content) | TODO(owner) | Specifications done. Content not started. |
-| M3: Walking skeleton | 3 | 2–3 | TODO(owner) | Decisions and standards done. Code not started. |
+| M3: Walking skeleton | 3 | 2–3 | TODO(owner) | **Built, and local gates pass.** First deploy and the WS checks are pending. |
 | M4: Core recruiter path | 4 | 5–7 | TODO(owner) | Not started |
 | M5: Feature-complete | 5 | 4–6 | TODO(owner) | Not started |
 | M6: v1.0.0 launched | 6 | 1–2 | TODO(owner) | Not started |
@@ -66,6 +66,31 @@ Each milestone closes one [roadmap](implementation-roadmap.md) phase. Effort is 
 **Done when**
 - WS-1 to WS-12 are verified, and each result is recorded in the pull request description.
 - The README has working setup instructions.
+
+**Status (2026-10-14).** Built on branch `chore/walking-skeleton`. Locally passing:
+- format, lint, types (0 errors), CSS tokens,
+- 18 unit tests,
+- 7 build-output tests in both development and production mode,
+- 12 E2E and axe runs (fallback mode, Chromium),
+- `npm audit` (0 vulnerabilities).
+
+| Check | Result so far |
+|---|---|
+| WS-7 | ✅ Local: 0 inline executable scripts. Enforced by `tests/build/output.test.ts`. |
+| WS-9 | ✅ Local: the Fonts API self-hosts the files and preloads only Plex Sans 400. It generates 5 files (weights × styles, including an unused 600 italic). Browsers download only the faces a page uses, which is 3 on the home page. |
+| WS-10 | ⚠️ Can't run on the owner's macOS 12 (`workerd` needs macOS 13.5 or later). CI runs it on Linux. |
+| WS-1 to WS-3, WS-5, WS-6, WS-11, WS-12 | Pending the first CI run and deploy |
+| WS-4 | Needs a non-root page, so it moves to M4. The smoke test checks `/index.html` → `/` now. |
+| WS-8 | No code blocks yet, so it moves to M4 |
+
+**Deviations from the plan above, each with its reason:**
+- **Content collections and the content test move to M4.** The schema arrives with the first real project. A placeholder schema would be rewritten anyway.
+- **`site`, canonical URLs, and the sitemap wait for the domain (Q4).** A placeholder origin would publish wrong canonical URLs.
+- **LICENSE waits on Q8.**
+- **No `vitest.config.ts`.** The defaults work, and scripts pass the test folders.
+- **Lighthouse CI runs through pinned `npx`, not as a dependency.** Its dependency tree carries unfixed advisories ([technology stack](../03-architecture/technology-stack.md#quality-tooling)).
+- **A local E2E fallback for macOS 12:** `astro preview` with installed Chrome ([local development](../06-operations/local-development.md#older-macos-fallback)). CI stays authoritative.
+- **Preview bootstrap:** preview versions need an existing Worker. The first pull request skips its preview with a notice, and WS-1 is proven on the next pull request.
 
 ## M4: Core recruiter path
 

@@ -2,8 +2,6 @@
 
 > Status: Accepted · Owner: Afran Anas · Last updated: 2026-10-13
 
-> The scaffold is created in the Phase 3 walking skeleton ([M3](../05-delivery/milestone-plan.md#m3-walking-skeleton)). The commands below are the **contract** that the scaffold must implement. Once it exists, check them and remove this note.
-
 ## Prerequisites
 
 | Tool | Version | Install |
@@ -11,7 +9,7 @@
 | Node.js | 24 LTS, the version in `.nvmrc` | `nvm install` / `fnm use`, or Volta |
 | npm | 11.x (ships with Node 24) | — |
 | Git | Any recent version | — |
-| Playwright browsers | Match the lockfile | `npx playwright install chromium webkit` |
+| Playwright browsers | Match the lockfile | `npx playwright install chromium webkit`. Not possible on macOS 12; see [older macOS](#older-macos-fallback). |
 | (optional) lychee | Latest | `brew install lychee`, for running the link check locally |
 
 Recommended editor extensions (VS Code): Astro (`astro-build.astro-vscode`), ESLint, and Prettier, with format-on-save turned on.
@@ -44,7 +42,8 @@ No secrets or accounts are needed to develop, build, or test. Only deployment ne
 | `test` | `vitest run` | Unit and content tests |
 | `test:build` | `vitest run tests/build` | Build-output tests. Needs `dist/`. |
 | `test:e2e` | `playwright test` | E2E and axe. Playwright's `webServer` builds and serves. |
-| `lhci` | `lhci autorun` | Lighthouse budgets against `serve` |
+| `lhci` | `npx @lhci/cli@0.15.1 autorun` | Lighthouse budgets against `serve`. It's pinned and run through `npx` rather than installed ([technology stack](../03-architecture/technology-stack.md#quality-tooling)). Needs Chrome. |
+| `test:e2e:fallback` | `astro preview` and installed Chrome, Chromium projects only | For machines that can't run `workerd` or Playwright's browsers. See [older macOS](#older-macos-fallback). |
 | `smoke` | `node scripts/smoke.mjs <url>` | Post-deploy checks against any URL |
 | `verify` | format:check → lint → check → check:css → test → build → test:build → test:e2e | **Run before every push.** Mirrors CI ([quality gates](../04-engineering/quality-gates.md#gate-1-local-before-pushing)). |
 
@@ -55,6 +54,28 @@ SITE_ENV=production npm run build && npm run serve
 ```
 
 The analytics beacon is left out unless `CF_WEB_ANALYTICS_TOKEN` is also set.
+
+## Older macOS fallback
+
+On **macOS 12** (the owner's current machine, checked on 2026-10-14), two tools don't run:
+
+- `wrangler dev`: Cloudflare's `workerd` runtime needs macOS 13.5 or later.
+- Playwright 1.64's bundled browsers: there are no macOS 12 builds.
+
+Use these instead:
+
+```sh
+npm run build && npm run test:e2e:fallback   # astro preview + your installed Google Chrome
+```
+
+What you lose locally:
+
+- the `host behavior` tests (headers, `_redirects`), which are skipped,
+- WebKit,
+- `npm run serve`,
+- `npm run lhci`.
+
+**CI runs all of them on Linux and is the authority.** The post-deploy smoke test checks host behavior against the real Cloudflare deployment. So `npm run verify` stops at `test:e2e` on this machine. Run the steps before it individually, then `test:e2e:fallback`.
 
 ## Typical workflows
 

@@ -1,0 +1,47 @@
+# Weekly external link check (NFR-REL-03). Opens/updates a `broken-links` issue; never blocks PRs.
+name: links
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  external-links:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    env:
+      ASTRO_TELEMETRY_DISABLED: '1'
+      SITE_ENV: production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Check links
+        id: lychee
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: --root-dir ${{ github.workspace }}/dist --fallback-extensions html --no-progress 'dist/**/*.html'
+          output: lychee/out.md
+          fail: false
+      - name: Open or update issue
+        if: steps.lychee.outputs.exit_code != 0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create broken-links --color d73a4a --description "Found by the weekly link check" --force
+          num=$(gh issue list --label broken-links --state open --json number --jq '.[0].number')
+          if [ -n "$num" ]; then
+            gh issue comment "$num" --body-file lychee/out.md
+          else
+            gh issue create --title "Broken links" --label broken-links --body-file lychee/out.md
+          fi
