@@ -72,7 +72,7 @@ E2E tests fail on any `securitypolicyviolation` event or CSP console error, so a
 | Secret | Where | Scope | Rotation |
 |---|---|---|---|
 | `CLOUDFLARE_API_TOKEN` | GitHub Actions secret | Workers edit on one account | Every year, or immediately on suspicion |
-| `CLOUDFLARE_ACCOUNT_ID` | GitHub Actions variable (an identifier, not a secret) | — | — |
+| `CLOUDFLARE_ACCOUNT_ID` | GitHub Actions secret. It's an identifier, not sensitive, but stored as a secret for simplicity. | — | — |
 | `CF_WEB_ANALYTICS_TOKEN` | GitHub Actions variable. **Public by design**, because it appears in page HTML. | Only allows sending beacons | Not needed |
 
 Rules:

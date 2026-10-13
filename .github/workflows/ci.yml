@@ -124,7 +124,7 @@ jobs:
         id: upload
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -o pipefail
           if ! npx wrangler versions upload --preview-alias "pr-$PR_NUMBER" --message "PR #$PR_NUMBER $HEAD_SHA" 2>&1 | tee upload.log; then
@@ -175,7 +175,7 @@ jobs:
         id: deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
         run: |
           set -o pipefail
